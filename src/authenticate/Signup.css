@@ -39,3 +39,14 @@
 .signup > button:hover {
   cursor: pointer;
 }
+
+@media screen and (max-width:500px) {
+  .login img{
+    display: none;
+  }
+  .login {
+    justify-content: center;
+    display: flex;
+    align-items: center;
+  }
+}

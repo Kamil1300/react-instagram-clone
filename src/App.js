@@ -1,6 +1,7 @@
 import "./App.css";
+import Home from "./home/Home";
 import Homepage from "./Homepage";
-import Authenticate from "./authenticate/Authenticate";
+// import Authenticate from "./authenticate/Authenticate";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { auth } from "./firebase";
@@ -10,13 +11,13 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    auth.onAuthStateChanged((authUser) => {
+    const unsubscribe = auth.onAuthStateChanged((authUser) => {
       if (authUser) {
         dispatch(
           loginUser({
-            uid: authUser.uid,
-            username: authUser.displayName,
-            email: authUser.email,
+            uid: authUser?.uid,
+            username: authUser?.displayName,
+            email: authUser?.email,
           })
         );
         dispatch(setLoading(false));
@@ -25,18 +26,26 @@ function App() {
         console.log("User is not logged in.");
       }
     });
-  }, []);
 
-  const user = useSelector((state) => state.data.user.user);
-  const isLoading = useSelector((state) => state.data.user.isLoading);
+    return () => {
+      // Cleanup function to unsubscribe when the component unmounts
+      unsubscribe();
+    };
+
+    // Add dispatch to the dependency array
+  }, [dispatch]);
+
+  const user = useSelector((state) => state?.data?.user?.user);
+  const isLoading = useSelector((state) => state?.data?.user?.isLoading);
+
   return (
     <div className="app">
       {isLoading ? (
-        <div class="loader-container">
-          <div class="loader"></div>
+        <div className="loader-container">
+          <div className="loader"></div>
         </div>
       ) : (
-        <>{user ? <Homepage /> : <Authenticate />}</>
+        <>{user ? <Homepage /> : <Home />}</>
       )}
     </div>
   );
